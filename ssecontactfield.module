@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * Implements hook_field_info().
+ */
+function ssecontactfield_field_info() {
+  return [
+    'sse_contact_item' => [
+      'label' => t('联系方式'),
+      'description' => t('该字段存储联系方式'),
+      'default_widget' => 'sse_contact_item_field',
+      'default_formatter' => 'sse_relative_link'
+    ]
+  ];
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function ssecontactfield_field_widget_info() {
+  return [
+    'sse_contact_item_field' => [
+      'label' => t('联系方式选择输入框'),
+      'field types' => ['sse_contact_item'],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  switch ($instance['widget']['type']) {
+    case 'sse_contact_item_field':
+      $element['sse_contact_item'] = [
+        '#type' => 'container',
+        '#title' => $element['#title'],
+        '#attributes' => ['class' => ['container-inline'], 'style' => 'margin-bottom:0']
+      ];
+      $element['sse_contact_item']['type'] = [
+        '#type' => 'select',
+        '#title_display' => 'invisible',
+        '#default_value' => isset($items[$delta]['type']) ? $items[$delta]['type'] : '',
+        '#required' => $element['#required'],
+        '#options' => [
+          'email' => 'Email',
+          'mobile' => '手机',
+          'wechat' => '微信',
+          'link' => '超链接',
+        ]
+      ];
+      $element['sse_contact_item']['val'] = [
+        '#type' => 'textfield',
+        '#title_display' => 'invisible',
+        '#default_value' => isset($items[$delta]['val']) ? $items[$delta]['val'] : '',
+        '#required' => $element['#required']
+      ];
+      break;
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_presave().
+ */
+function ssecontactfield_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  foreach ($items as $delta => $item) {
+    if (isset($item['sse_contact_item']['type'])) {
+      $items[$delta]['type'] = $item['sse_contact_item']['type'];
+      $items[$delta]['val'] = $item['sse_contact_item']['val'];
+    }
+  }
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function ssecontactfield_field_is_empty($item, $field) {
+  if (empty($item['sse_contact_item']['val'])) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ssecontactfield_field_formatter_info() {
+  return [
+    'sse_relative_link' => [
+      'label' => t('相关链接条目输出'),
+      'field types' => ['sse_contact_item'],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ssecontactfield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = [];
+  switch ($display['type']) {
+    case 'sse_relative_link' :
+      foreach ($items as $delta => $item) {
+        if (isset($item['val'])) {
+          $element[$delta]['#markup'] = $item['type'] . ' ' . $item['val'];
+        }
+      }
+      break;
+  }
+  return $element;
+}

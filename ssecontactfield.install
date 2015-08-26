@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Implements hook_field_schema().
+ */
+function ssecontactfield_field_schema($field) {
+  return [
+    'columns' => [
+      'type' => [
+        'type' => 'varchar',
+        'length' => 31,
+        'not null' => FALSE
+      ],
+      'val' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE
+      ]
+    ]
+  ];
+}

@@ -43,6 +43,7 @@ function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instan
         '#default_value' => isset($items[$delta]['type']) ? $items[$delta]['type'] : '',
         '#required' => $element['#required'],
         '#options' => [
+          'none' => '- 选择 -',
           'email' => 'Email',
           'mobile' => '手机',
           'wechat' => '微信',
@@ -53,7 +54,14 @@ function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instan
         '#type' => 'textfield',
         '#title_display' => 'invisible',
         '#default_value' => isset($items[$delta]['val']) ? $items[$delta]['val'] : '',
+        '#attributes' => ['placeholder' => t('链接内容 / Email 地址 / 手机号')],
         '#required' => $element['#required']
+      ];
+      $element['sse_contact_item']['title'] = [
+        '#type' => 'textfield',
+        '#title_display' => 'invisible',
+        '#default_value' => isset($items[$delta]['title']) ? $items[$delta]['title'] : '',
+        '#attributes' => ['placeholder' => t('可选标题，适用于超链接 / Email')]
       ];
       break;
   }
@@ -68,6 +76,7 @@ function ssecontactfield_field_presave($entity_type, $entity, $field, $instance,
     if (isset($item['sse_contact_item']['type'])) {
       $items[$delta]['type'] = $item['sse_contact_item']['type'];
       $items[$delta]['val'] = $item['sse_contact_item']['val'];
+      $items[$delta]['title'] = $item['sse_contact_item']['title'];
     }
   }
 }
@@ -76,7 +85,7 @@ function ssecontactfield_field_presave($entity_type, $entity, $field, $instance,
  * Implements hook_field_is_empty().
  */
 function ssecontactfield_field_is_empty($item, $field) {
-  if (empty($item['sse_contact_item']['val'])) {
+  if (empty($item['sse_contact_item']['val']) || !isset($item['sse_contact_item']['val']) || $item['sse_contact_item']['val'] === 'none') {
     return TRUE;
   }
   return FALSE;
@@ -103,7 +112,29 @@ function ssecontactfield_field_formatter_view($entity_type, $entity, $field, $in
     case 'sse_relative_link' :
       foreach ($items as $delta => $item) {
         if (isset($item['val'])) {
-          $element[$delta]['#markup'] = $item['type'] . ' ' . $item['val'];
+          $markup = '<div class="relative-link__item">';
+          switch ($item['type']) {
+          case 'link':
+            if (strlen($item['title']) === 0) {
+              $item['title'] = $item['val'];
+            }
+            $markup .= '<i class="relative-link__icon icon-link"></i> <a href="'.url($item['val']).'">'.check_plain($item['title']).'</a>';
+            break;
+          case 'email':
+            if (strlen($item['title']) === 0) {
+              $item['title'] = $item['val'];
+            }
+            $markup .= '<i class="relative-link__icon icon-local_post_office"></i> <a href="mailto:'.check_plain($item['val']).'">'.check_plain($item['title']).'</a>';
+            break;
+          case 'mobile':
+            $markup .= '<i class="relative-link__icon icon-phone"></i> '.check_plain($item['val']);
+            break;
+          case 'wechat':
+            $markup .= '<i class="relative-link__icon icon-message"></i> 微信 '.check_plain($item['val']);
+            break;
+          }
+          $markup .= '</div>';
+          $element[$delta]['#markup'] = $markup;
         }
       }
       break;

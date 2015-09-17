@@ -45,8 +45,9 @@ function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instan
         '#options' => [
           'none' => '- 选择 -',
           'email' => 'Email',
-          'mobile' => '手机',
+          'mobile' => '手机/电话',
           'wechat' => '微信',
+          'qq' => 'QQ',
           'link' => '超链接',
         ]
       ];
@@ -54,7 +55,7 @@ function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instan
         '#type' => 'textfield',
         '#title_display' => 'invisible',
         '#default_value' => isset($items[$delta]['val']) ? $items[$delta]['val'] : '',
-        '#attributes' => ['placeholder' => t('链接内容 / Email 地址 / 手机号')],
+        '#attributes' => ['placeholder' => t('链接内容 / Email 地址 / 手机号 / 电话')],
         '#required' => $element['#required']
       ];
       $element['sse_contact_item']['title'] = [
@@ -130,7 +131,10 @@ function ssecontactfield_field_formatter_view($entity_type, $entity, $field, $in
             $markup .= '<i class="relative-link__icon icon-phone"></i> '.check_plain($item['val']);
             break;
           case 'wechat':
-            $markup .= '<i class="relative-link__icon icon-message"></i> 微信 '.check_plain($item['val']);
+            $markup .= '<i class="relative-link__icon icon-wechat"></i> '.check_plain($item['val']);
+            break;
+          case 'qq':
+            $markup .= '<i class="relative-link__icon icon-qq"></i> '.check_plain($item['val']);
             break;
           }
           $markup .= '</div>';

@@ -3,7 +3,7 @@
 /**
  * Implements hook_field_info().
  */
-function ssecontactfield_field_info() {
+function sse_contactfield_field_info() {
   return [
     'sse_contact_item' => [
       'label' => t('联系方式'),
@@ -17,7 +17,7 @@ function ssecontactfield_field_info() {
 /**
  * Implements hook_field_widget_info().
  */
-function ssecontactfield_field_widget_info() {
+function sse_contactfield_field_widget_info() {
   return [
     'sse_contact_item_field' => [
       'label' => t('联系方式选择输入框'),
@@ -29,7 +29,7 @@ function ssecontactfield_field_widget_info() {
 /**
  * Implements hook_field_widget_form().
  */
-function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+function sse_contactfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   switch ($instance['widget']['type']) {
     case 'sse_contact_item_field':
       $element['sse_contact_item'] = [
@@ -72,7 +72,7 @@ function ssecontactfield_field_widget_form(&$form, &$form_state, $field, $instan
 /**
  * Implements hook_field_presave().
  */
-function ssecontactfield_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+function sse_contactfield_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
   foreach ($items as $delta => $item) {
     if (isset($item['sse_contact_item']['type'])) {
       $items[$delta]['type'] = $item['sse_contact_item']['type'];
@@ -85,7 +85,7 @@ function ssecontactfield_field_presave($entity_type, $entity, $field, $instance,
 /**
  * Implements hook_field_is_empty().
  */
-function ssecontactfield_field_is_empty($item, $field) {
+function sse_contactfield_field_is_empty($item, $field) {
   if (empty($item['sse_contact_item']['val']) || !isset($item['sse_contact_item']['val']) || $item['sse_contact_item']['val'] === 'none') {
     return TRUE;
   }
@@ -95,7 +95,7 @@ function ssecontactfield_field_is_empty($item, $field) {
 /**
  * Implements hook_field_formatter_info().
  */
-function ssecontactfield_field_formatter_info() {
+function sse_contactfield_field_formatter_info() {
   return [
     'sse_relative_link' => [
       'label' => t('相关链接条目输出'),
@@ -107,7 +107,7 @@ function ssecontactfield_field_formatter_info() {
 /**
  * Implements hook_field_formatter_view().
  */
-function ssecontactfield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function sse_contactfield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = [];
   switch ($display['type']) {
     case 'sse_relative_link' :

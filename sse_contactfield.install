@@ -3,7 +3,7 @@
 /**
  * Implements hook_field_schema().
  */
-function ssecontactfield_field_schema($field) {
+function sse_contactfield_field_schema($field) {
   return [
     'columns' => [
       'type' => [
